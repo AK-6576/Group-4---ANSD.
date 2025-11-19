@@ -1,2 +1,1 @@
-# iOS-SDP---ANSD-App.
-ANSD App Development - 2025.
+Group 4 - iOS SDP.
