@@ -11,9 +11,7 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     @IBOutlet weak var tableView: UITableView!
     
-    // MARK: - 1. Data Source (Structs)
-    
-    // This array holds the dynamic data for your Participants section
+    // MARK: - Data Source
     var participantsData: [ParticipantData] = [
         ParticipantData(
             initials: "SP",
@@ -26,24 +24,19 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     ]
 
     // MARK: - Lifecycle
-    
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Basic Setup
         view.backgroundColor = .systemGroupedBackground
         
-        // TableView Setup
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         
-        // CRITICAL: Enable Auto Layout for row heights
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 120
         
-        // Dismiss keyboard when tapping outside
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
@@ -54,77 +47,67 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
 
     // MARK: - Actions
-    
     @IBAction func backTapped(_ sender: Any) {
         self.dismiss(animated: true, completion: nil)
     }
     
     @IBAction func shareTapped(_ sender: Any) {
-        print("Share tapped - functionality to export notes can go here")
+        print("Share functionality")
     }
 
-    // MARK: - Table Data Source
+    // MARK: - Table View Data Source
     
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 6 // Headers + Cards for Conversation, Notes, and Participants
+        return 6
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if section == 5 {
-            // Section 5 is the Participants List -> Return count of our data array
+        if section == 3 {
             return participantsData.count
         }
-        // All other sections (Headers and Single Cards) have 1 row
         return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
+            
+        // --- 1. CONVERSATION ---
         case 0:
-            // 1. HEADER: Conversation
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummarySectionHeaderCell", for: indexPath) as! SummarySectionHeaderCell
+            // FIX: Set the text here, otherwise it will be empty!
             cell.headerLabel.text = "Conversation Summary"
             cell.headerIcon.image = UIImage(systemName: "list.bullet.clipboard")
             return cell
             
         case 1:
-            // 2. CARD: Conversation Details
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummaryCardCell", for: indexPath) as! SummaryCardCell
             cell.titleLabel.text = "Conversation 1"
-            // You can set date/location here if you have outlets for them
             return cell
             
+        // --- 2. PARTICIPANTS ---
         case 2:
-            // 3. HEADER: Notes
+            // Ensure Storyboard Identifier is "ParticipantsHeaderCell"
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ParticipantHeaderCell", for: indexPath) as! ParticipantsSummaryHeaderCell
+            return cell
+            
+        case 3:
+            // Ensure Storyboard Identifier is "ParticipantDetailCell"
+            let cell = tableView.dequeueReusableCell(withIdentifier: "ParticipantsCardCell", for: indexPath) as! ParticipantCardCell
+            let data = participantsData[indexPath.row]
+            cell.configure(with: data)
+            return cell
+            
+        // --- 3. NOTES ---
+        case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummarySectionHeaderCell", for: indexPath) as! SummarySectionHeaderCell
             cell.headerLabel.text = "Notes"
             cell.headerIcon.image = UIImage(systemName: "note.text")
             return cell
             
-        case 3:
-            // 4. CARD: Interactive Notes
-            let cell = tableView.dequeueReusableCell(withIdentifier: "NotesCardCell", for: indexPath) as! NotesCardCell
-            cell.titleLabel.text = "Notes"
-            // Set the delegate so the cell can tell us when to resize
-            cell.delegate = self
-            return cell
-            
-        case 4:
-            // 5. HEADER: Participants
-            let cell = tableView.dequeueReusableCell(withIdentifier: "ParticipantsHeaderCell", for: indexPath) as! ParticipantsSummaryHeaderCell
-            return cell
-            
         case 5:
-            // 6. CARD: Participant Details (Dynamic List)
-            let cell = tableView.dequeueReusableCell(withIdentifier: "ParticipantDetailCell", for: indexPath) as! ParticipantCardCell
-            
-            // Get data for this specific row
-            let data = participantsData[indexPath.row]
-            
-            // Configure the cell (updates the Initials and Summary Label)
-            cell.configure(with: data)
-            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "NotesCardCell", for: indexPath) as! NotesCardCell
+            cell.delegate = self
             return cell
             
         default:
@@ -133,15 +116,11 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     // MARK: - NotesCardCellDelegate
-    
-    // This is called whenever you type in the Notes cell
     func didUpdateText(in cell: NotesCardCell) {
-        // Forces the table view to recalculate cell heights without reloading data (keeps keyboard open)
         tableView.performBatchUpdates(nil, completion: nil)
         
-        // Optional: Scroll to keep the cursor visible if it goes off screen
-        // if let indexPath = tableView.indexPath(for: cell) {
-        //    tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
-        // }
+        if let indexPath = tableView.indexPath(for: cell) {
+            tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
+        }
     }
 }

@@ -7,51 +7,107 @@
 
 import UIKit
 
-// MARK: - 1. Section Header Cell (Reusable)
-// Used for "Conversation Summary" and "Notes" headers
-class SummarySectionHeaderCell: UITableViewCell {
+// MARK: - 1. Protocols & Data Models
+protocol NotesCardCellDelegate: AnyObject {
+    func didUpdateText(in cell: NotesCardCell)
+}
+
+// MARK: - 2. Shared Helper for Styling
+private func styleCard(view: UIView?) {
+    guard let card = view else { return }
+    card.layer.cornerRadius = 12
+    card.backgroundColor = .white
     
+    // Shadow Styling
+    card.layer.shadowColor = UIColor.black.cgColor
+    card.layer.shadowOpacity = 0.05
+    card.layer.shadowOffset = CGSize(width: 0, height: 2)
+    card.layer.shadowRadius = 4
+}
+
+// MARK: - 3. Header Cells
+
+// Used for "Conversation Summary" and "Notes"
+class SummarySectionHeaderCell: UITableViewCell {
     @IBOutlet weak var headerIcon: UIImageView!
     @IBOutlet weak var headerLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
-        // No specific styling needed here
+        self.backgroundColor = .clear
+        self.contentView.backgroundColor = .clear
     }
 }
 
-// MARK: - 2. Conversation Summary Card
-class SummaryCardCell: UITableViewCell {
-    
-    @IBOutlet weak var mainCardView: UIView!
-    @IBOutlet weak var titleLabel: UILabel!
-    @IBOutlet weak var dateLabel: UILabel!
-    @IBOutlet weak var locationLabel: UILabel! // Ensure this is connected in Storyboard
+// Used for "Participants Summary"
+class ParticipantsSummaryHeaderCell: UITableViewCell {
+    @IBOutlet weak var participantIcon: UIImageView!
+    @IBOutlet weak var participantLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.backgroundColor = .clear
+        self.contentView.backgroundColor = .clear
+    }
+}
+
+// MARK: - 4. Content Cards
+
+// Conversation Details Card
+class SummaryCardCell: UITableViewCell {
+    @IBOutlet weak var mainCardView: UIView!
+    @IBOutlet weak var titleLabel: UILabel!
+    
+    // --- RESTORED TO PREVENT CRASH ---
+    // Even if you don't use them, these must exist if Storyboard is connected
+    @IBOutlet weak var dateLabel: UILabel!
+    @IBOutlet weak var locationLabel: UILabel!
+    // ---------------------------------
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        self.backgroundColor = .clear
         styleCard(view: mainCardView)
     }
 }
 
-// 1. Define this protocol outside the class
-protocol NotesCardCellDelegate: AnyObject {
-    func didUpdateText(in cell: NotesCardCell)
+// Participant Details Card (Dynamic)
+class ParticipantCardCell: UITableViewCell {
+    @IBOutlet weak var mainCardView: UIView!
+    @IBOutlet weak var avatarCircle: UIView!
+    @IBOutlet weak var detailsLabel: UILabel!
+    @IBOutlet weak var initialsLabel: UILabel! // Make sure this is connected!
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        self.backgroundColor = .clear
+        styleCard(view: mainCardView)
+        
+        avatarCircle.layer.cornerRadius = 4
+        avatarCircle.clipsToBounds = true
+    }
+    
+    func configure(with data: ParticipantData) {
+        // Safe check in case label isn't connected yet
+        if let label = initialsLabel {
+            label.text = data.initials
+        }
+        detailsLabel.text = data.summary
+    }
 }
 
+// Notes Input Card (Interactive)
 class NotesCardCell: UITableViewCell, UITextViewDelegate {
     
     @IBOutlet weak var mainCardView: UIView!
-    @IBOutlet weak var titleLabel: UILabel!
     @IBOutlet weak var notesTextView: UITextView!
     
-    // 2. Add a delegate property
     weak var delegate: NotesCardCellDelegate?
-    
     let placeholderText = "Add your notes about this conversation..."
     
     override func awakeFromNib() {
         super.awakeFromNib()
+        self.backgroundColor = .clear
         styleCard(view: mainCardView)
         
         notesTextView.delegate = self
@@ -59,11 +115,11 @@ class NotesCardCell: UITableViewCell, UITextViewDelegate {
         notesTextView.textColor = .lightGray
         notesTextView.font = UIFont.systemFont(ofSize: 15)
         
-        // 3. CRITICAL: Disable scrolling so the text view expands instead of scrolling internally
+        // CRITICAL: Disabling scroll allows Auto Layout to expand the cell height
         notesTextView.isScrollEnabled = false
+        notesTextView.textContainerInset = .zero
+        notesTextView.textContainer.lineFragmentPadding = 0
     }
-    
-    // MARK: - UITextView Delegate
     
     func textViewDidBeginEditing(_ textView: UITextView) {
         if textView.text == placeholderText {
@@ -79,58 +135,7 @@ class NotesCardCell: UITableViewCell, UITextViewDelegate {
         }
     }
     
-    // 4. This function fires every time a character is typed
     func textViewDidChange(_ textView: UITextView) {
-        // Notify the view controller to update layout
         delegate?.didUpdateText(in: self)
     }
 }
-
-// MARK: - 4. Participants Header Cell
-class ParticipantsSummaryHeaderCell: UITableViewCell {
-    
-    @IBOutlet weak var participantIcon: UIImageView!
-    @IBOutlet weak var participantLabel: UILabel!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-    }
-}
-
-// MARK: - 5. Participant Detail Cell (Dynamic)
-class ParticipantCardCell: UITableViewCell {
-    
-    @IBOutlet weak var mainCardView: UIView!
-    @IBOutlet weak var avatarCircle: UIView!
-    @IBOutlet weak var detailsLabel: UILabel!
-    
-    override func awakeFromNib() {
-        super.awakeFromNib()
-        styleCard(view: mainCardView)
-        
-        // Make the avatar circle perfectly round
-        avatarCircle.layer.cornerRadius = avatarCircle.frame.height / 2
-        avatarCircle.clipsToBounds = true
-    }
-    
-    // Helper function to populate data
-    func configure(with data: ParticipantData) {
-        detailsLabel.text = data.summary
-    }
-}
-
-// MARK: - Global Helper Function
-// Defines the shadow and corner radius style for all cards
-private func styleCard(view: UIView?) {
-    guard let card = view else { return }
-    
-    card.layer.cornerRadius = 12
-    card.backgroundColor = .white // or .systemBackground if supporting dark mode fully
-    
-    // Shadow properties
-    card.layer.shadowColor = UIColor.black.cgColor
-    card.layer.shadowOpacity = 0.05
-    card.layer.shadowOffset = CGSize(width: 0, height: 2)
-    card.layer.shadowRadius = 4
-}
-
