@@ -67,7 +67,12 @@ class ViewCell: UICollectionViewCell {
         timeIcon.image = UIImage(systemName: "clock")
         arrowImage.image = UIImage(systemName: "chevron.right")
         arrowImage.tintColor = .systemGray4
-        
+        containerView.layer.cornerRadius = 12 // Matches the Figma roundness
+            containerView.layer.masksToBounds = true // Ensures content stays inside rounded corners
+            
+            // Optional: Add a subtle border like the design often has
+            containerView.layer.borderWidth = 1
+            containerView.layer.borderColor = UIColor.systemGray5.cgColor
         // Ensure the cell background is clear so the CollectionView's background shows
         self.backgroundColor = .clear
         self.contentView.backgroundColor = .clear

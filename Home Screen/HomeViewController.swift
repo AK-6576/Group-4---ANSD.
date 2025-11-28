@@ -89,6 +89,26 @@ class HomeViewController: UIViewController {
     
     
     @IBOutlet weak var collectionView: UICollectionView!
+    
+    
+    @IBAction func profileIconTapped(_ sender: UIButton) {
+        print("1. Button Tapped")
+            
+            let storyboard = UIStoryboard(name: "Storyboard", bundle: nil)
+            
+            // Check if the ID exists first (Generic)
+            let genericVC = storyboard.instantiateViewController(withIdentifier: "ProfileScreen")
+            
+            // Check if the Class cast works
+            if let profileVC = genericVC as? ProfileTableViewController {
+                print("2. Success! Found the Custom Class.")
+                profileVC.modalPresentationStyle = .pageSheet
+                self.present(profileVC, animated: true, completion: nil)
+            } else {
+                // This is likely what is printing right now
+                print("ERROR: Found the screen, but it is NOT connected to 'ProfileTableViewController' in the Storyboard Class field.")
+            }
+    }
     // MARK: Data Sources
         var routineItems: [RoutineConversation] = []
         var viewItems: [ConversationHistoryItem] = [] // <--- New Array for JSON Data
