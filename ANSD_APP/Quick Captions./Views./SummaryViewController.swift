@@ -11,11 +11,10 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     @IBOutlet weak var tableView: UITableView!
     
-    // MARK: - 1. State Variables
-    // Holds the title so it doesn't disappear when scrolling
+    // 1. DEFAULT TITLE: This ensures "Conversation 1" appears on launch
     var conversationTitle = "Conversation 1"
     
-    // Data Source for Participants
+    // Data Source
     var participantsData: [ParticipantData] = [
         ParticipantData(
             initials: "SP",
@@ -31,7 +30,6 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        // Visual Setup
         view.backgroundColor = .systemGroupedBackground
         
         tableView.delegate = self
@@ -39,11 +37,9 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
         
-        // CRITICAL: Auto-sizing row heights
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 120
         
-        // Dismiss keyboard when tapping background
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
@@ -59,63 +55,52 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     }
     
     @IBAction func shareTapped(_ sender: Any) {
-        print("Share functionality triggered")
+        print("Share functionality")
     }
 
     // MARK: - Table View Data Source
-    
     func numberOfSections(in tableView: UITableView) -> Int {
-        return 6 // Headers + Cards for (Conversation, Participants, Notes)
+        return 6
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        // Section 3 is the Dynamic Participants List
-        if section == 3 {
-            return participantsData.count
-        }
+        if section == 3 { return participantsData.count }
         return 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         
         switch indexPath.section {
-            
-        // --- SECTION 1: CONVERSATION ---
-        case 0: // Header
+        case 0:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummarySectionHeaderCell", for: indexPath) as! SummarySectionHeaderCell
             cell.headerLabel.text = "Conversation Summary"
             cell.headerIcon.image = UIImage(systemName: "list.bullet.clipboard")
             return cell
             
-        case 1: // Card (Editable)
+        case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummaryCardCell", for: indexPath) as! SummaryCardCell
-            
-            // FIX: Set the text from our variable so it's not empty
+            // Sets the default title "Conversation 1"
             cell.titleTextField.text = conversationTitle
-            
-            // Connect Delegate
             cell.delegate = self
             return cell
             
-        // --- SECTION 2: PARTICIPANTS ---
-        case 2: // Header
+        case 2:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ParticipantsSummaryHeaderCell", for: indexPath) as! ParticipantsSummaryHeaderCell
             return cell
             
-        case 3: // Card (Dynamic)
+        case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ParticipantsCardCell", for: indexPath) as! ParticipantCardCell
             let data = participantsData[indexPath.row]
             cell.configure(with: data)
             return cell
             
-        // --- SECTION 3: NOTES ---
-        case 4: // Header
+        case 4:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummarySectionHeaderCell", for: indexPath) as! SummarySectionHeaderCell
             cell.headerLabel.text = "Notes"
             cell.headerIcon.image = UIImage(systemName: "note.text")
             return cell
             
-        case 5: // Card (Interactive)
+        case 5:
             let cell = tableView.dequeueReusableCell(withIdentifier: "NotesCardCell", for: indexPath) as! NotesCardCell
             cell.delegate = self
             return cell
@@ -125,33 +110,42 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
-    // MARK: - NotesCardCellDelegate (Auto-Resize)
+    // MARK: - Notes Delegate
     func didUpdateText(in cell: NotesCardCell) {
-        // Forces the table to recalculate height without closing keyboard
         tableView.performBatchUpdates(nil, completion: nil)
-        
-        // Keep cursor visible
         if let indexPath = tableView.indexPath(for: cell) {
             tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
         }
     }
     
-    // MARK: - SummaryCardDelegate (Name Change Logic)
+    // MARK: - Name Change Logic (UPDATED)
     func didChangeName(text: String) {
-        // 1. Update local variable
+        // 1. Always update the variable so the title persists when scrolling
         conversationTitle = text
         
-        // 2. Update Data Logic (Example: Update Participant 1's summary)
+        // Safety check
         guard !participantsData.isEmpty else { return }
         
-        var firstPerson = participantsData[0]
-        let nameToDisplay = text.isEmpty ? "Speaker 1" : text
+        // 2. THE FIX: Logic to decide what name to show
+        let nameToDisplay: String
         
+        if text.isEmpty || text == "Conversation 1" {
+            // If it's the default title, keep the person as "Speaker 1"
+            nameToDisplay = "Speaker 1"
+        } else {
+            // If the user typed something new (e.g., "John"), use that
+            nameToDisplay = text
+        }
+        
+        // 3. Update the data
+        var firstPerson = participantsData[0]
+        
+        // Use 'nameToDisplay' instead of 'text'
         firstPerson.summary = "\(nameToDisplay) is a cab driver who inquired about whether he should drop Steve at the gate..."
         
         participantsData[0] = firstPerson
         
-        // 3. Reload Participant Row smoothly
+        // 4. Reload
         let indexPath = IndexPath(row: 0, section: 3)
         tableView.reloadRows(at: [indexPath], with: .none)
     }

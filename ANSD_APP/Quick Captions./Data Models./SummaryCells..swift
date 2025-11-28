@@ -55,7 +55,7 @@ class ParticipantsSummaryHeaderCell: UITableViewCell {
 class SummaryCardCell: UITableViewCell {
     
     @IBOutlet weak var mainCardView: UIView!
-  
+    
     @IBOutlet weak var titleTextField: UITextField!
     
     @IBOutlet weak var dateLabel: UILabel!
@@ -67,11 +67,6 @@ class SummaryCardCell: UITableViewCell {
         super.awakeFromNib()
         self.backgroundColor = .clear
         styleCard(view: mainCardView)
-    }
-    
-    // LINK THIS ACTION: Right-click Text Field -> Drag "Editing Changed" here
-    @IBAction func nameFieldChanged(_ sender: UITextField) {
-        delegate?.didChangeName(text: sender.text ?? "")
     }
 }
 
