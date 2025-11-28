@@ -646,14 +646,12 @@
                                 <action selector="backTapped:" destination="RGC-I3-0nd" id="MEN-Wc-SPD"/>
                             </connections>
                         </barButtonItem>
-                        <barButtonItem key="rightBarButtonItem" image="square.and.arrow.up" catalog="system" id="jii-NI-x6g">
+                        <barButtonItem key="rightBarButtonItem" image="ellipsis.circle" catalog="system" id="jii-NI-x6g">
                             <color key="tintColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
-                            <connections>
-                                <action selector="shareTapped:" destination="RGC-I3-0nd" id="fk0-59-1dc"/>
-                            </connections>
                         </barButtonItem>
                     </navigationItem>
                     <connections>
+                        <outlet property="optionsButton" destination="jii-NI-x6g" id="tv3-BO-wdJ"/>
                         <outlet property="tableView" destination="K2q-AI-2zg" id="YWz-8x-tQu"/>
                     </connections>
                 </viewController>
@@ -706,6 +704,7 @@
         <image name="calendar" catalog="system" width="128" height="107"/>
         <image name="chevron.left" catalog="system" width="97" height="128"/>
         <image name="clock" catalog="system" width="128" height="123"/>
+        <image name="ellipsis.circle" catalog="system" width="128" height="123"/>
         <image name="list.bullet.clipboard" catalog="system" width="98" height="128"/>
         <image name="location" catalog="system" width="128" height="119"/>
         <image name="microphone.fill" catalog="system" width="110" height="128"/>
@@ -713,7 +712,6 @@
         <image name="person.2.fill" catalog="system" width="128" height="86"/>
         <image name="person.circle.fill" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
-        <image name="square.and.arrow.up" catalog="system" width="110" height="128"/>
         <image name="square.fill" catalog="system" width="128" height="114"/>
         <image name="text.pad.header" catalog="system" width="128" height="107"/>
         <systemColor name="labelColor">

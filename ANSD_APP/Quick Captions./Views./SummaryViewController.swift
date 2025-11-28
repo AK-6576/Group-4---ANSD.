@@ -6,20 +6,24 @@
 //
 
 import UIKit
+import PDFKit
 
 class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, NotesCardCellDelegate, SummaryCardDelegate {
-
+    
     @IBOutlet weak var tableView: UITableView!
+    
+    // NOTE: Ensure this is connected to your Top Right Bar Button Item
+    @IBOutlet weak var optionsButton: UIBarButtonItem!
     
     // 1. DEFAULT TITLE
     var conversationTitle = "Conversation 1"
-
-    // 2. DATA SOURCE (Bucky Barnes Data)
+    
+    // 2. DATA SOURCE
     var participantsData: [ParticipantData] = [
         ParticipantData(
             name: "Bucky Barnes",
             initials: "SP",
-            summary: "Bucky Barnes is a cab driver who inquired about whether he should drop Steve at the gate or under a particular building."
+            summary: "Person 1 is a cab driver who inquired about whether he should drop Steve at the gate or under a particular building."
         ),
         ParticipantData(
             name: "Steve",
@@ -47,6 +51,9 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
+        
+        // CRITICAL: Initialize the Menu
+        setupOptionsMenu()
     }
     
     @objc func dismissKeyboard() {
@@ -55,14 +62,111 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     
     // MARK: - Actions
     
-    // CONNECT THIS TO YOUR "X" BAR BUTTON ITEM
+    // CONNECT THIS TO YOUR TOP LEFT "X" BUTTON
     @IBAction func backTapped(_ sender: Any) {
-        // This command closes the Modal (slides it down)
         self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func shareTapped(_ sender: Any) {
-        print("Share functionality")
+    // MARK: - The Menu Logic (Top Right)
+    func setupOptionsMenu() {
+        
+        // Action 1: Share / Export
+        let shareAction = UIAction(title: "Share / Export", image: UIImage(systemName: "square.and.arrow.up")) { [weak self] _ in
+            self?.showExportPopup()
+        }
+        
+        // Action 2: End Session (Red/Destructive)
+        let endAction = UIAction(title: "End Session", image: UIImage(systemName: "xmark.circle"), attributes: .destructive) { [weak self] _ in
+            // Go Home (Dismiss everything)
+            self?.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+        }
+        
+        // Create the Menu
+        let menu = UIMenu(title: "", children: [shareAction, endAction])
+        
+        // Attach it to the Bar Button Item
+        optionsButton.menu = menu
+    }
+
+    // MARK: - Helper: The Export Pop-up
+    func showExportPopup() {
+        let alert = UIAlertController(title: "Export Summary", message: "Choose a format to share", preferredStyle: .alert)
+        
+        alert.addAction(UIAlertAction(title: "Share as Text", style: .default, handler: { _ in
+            self.shareAsText()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Share as PDF", style: .default, handler: { _ in
+            self.shareAsPDF()
+        }))
+        
+        alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
+        
+        self.present(alert, animated: true)
+    }
+
+    // MARK: - Logic 1: Share Plain Text
+    func shareAsText() {
+        // 1. Compile the text
+        var fullText = "Conversation Title: \(conversationTitle)\n\n"
+        for person in participantsData {
+            fullText += "\(person.name) (\(person.initials)):\n\(person.summary)\n\n"
+        }
+        
+        // 2. Open Native Share Sheet
+        let activityVC = UIActivityViewController(activityItems: [fullText], applicationActivities: nil)
+        activityVC.popoverPresentationController?.sourceView = self.view // iPad fix
+        self.present(activityVC, animated: true)
+    }
+    
+    // MARK: - Logic 2: Share PDF
+    func shareAsPDF() {
+        // 1. Compile the text for the PDF
+        var pdfContent = "Conversation Title: \(conversationTitle)\n\n"
+        for person in participantsData {
+            pdfContent += "\(person.name) (\(person.initials)):\n\(person.summary)\n\n"
+        }
+        
+        // 2. Generate PDF File
+        if let pdfURL = createPDF(from: pdfContent) {
+            // 3. Open Native Share Sheet with the File
+            let activityVC = UIActivityViewController(activityItems: [pdfURL], applicationActivities: nil)
+            activityVC.popoverPresentationController?.sourceView = self.view // iPad fix
+            self.present(activityVC, animated: true)
+        }
+    }
+    
+    // MARK: - PDF Generator Helper
+    func createPDF(from text: String) -> URL? {
+        let pageWidth = 595.2 // A4 Width
+        let pageHeight = 841.8 // A4 Height
+        let pageRect = CGRect(x: 0, y: 0, width: pageWidth, height: pageHeight)
+        
+        let renderer = UIGraphicsPDFRenderer(bounds: pageRect)
+        
+        let data = renderer.pdfData { (context) in
+            context.beginPage()
+            
+            let attributes = [
+                NSAttributedString.Key.font: UIFont.systemFont(ofSize: 12),
+                NSAttributedString.Key.paragraphStyle: NSMutableParagraphStyle()
+            ]
+            
+            let textRect = CGRect(x: 40, y: 40, width: pageWidth - 80, height: pageHeight - 80)
+            text.draw(in: textRect, withAttributes: attributes)
+        }
+        
+        let tempFolder = FileManager.default.temporaryDirectory
+        let fileName = "\(conversationTitle) - Summary.pdf"
+        let fileURL = tempFolder.appendingPathComponent(fileName)
+        
+        do {
+            try data.write(to: fileURL)
+            return fileURL
+        } catch {
+            print("Error generating PDF: \(error)")
+            return nil
+        }
     }
     
     // MARK: - Table View Data Source
