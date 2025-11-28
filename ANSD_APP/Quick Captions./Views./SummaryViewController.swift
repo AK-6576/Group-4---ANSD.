@@ -11,9 +11,10 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
 
     @IBOutlet weak var tableView: UITableView!
     
+    // 1. DEFAULT TITLE
     var conversationTitle = "Conversation 1"
-    
-    // MARK: - Data Source
+
+    // 2. DATA SOURCE (Bucky Barnes Data)
     var participantsData: [ParticipantData] = [
         ParticipantData(
             name: "Bucky Barnes",
@@ -26,28 +27,48 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             summary: "Steve mentioned that the gate would be fine and gave the access code 1322 5669 and mentioned the building as C4."
         )
     ]
-
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
         view.backgroundColor = .systemGroupedBackground
+        
         tableView.delegate = self
         tableView.dataSource = self
         tableView.separatorStyle = .none
         tableView.backgroundColor = .clear
+        
+        // Auto-sizing row heights
         tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 120
         
+        // Dismiss keyboard on tap
         let tap = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tap.cancelsTouchesInView = false
         view.addGestureRecognizer(tap)
     }
-
-    @objc func dismissKeyboard() { view.endEditing(true) }
-    @IBAction func backTapped(_ sender: Any) { dismiss(animated: true, completion: nil) }
-    @IBAction func shareTapped(_ sender: Any) { print("Share tapped") }
-
+    
+    @objc func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    // MARK: - Actions
+    
+    // CONNECT THIS TO YOUR "X" BAR BUTTON ITEM
+    @IBAction func backTapped(_ sender: Any) {
+        // This command closes the Modal (slides it down)
+        self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func shareTapped(_ sender: Any) {
+        print("Share functionality")
+    }
+    
     // MARK: - Table View Data Source
-    func numberOfSections(in tableView: UITableView) -> Int { return 6 }
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 6
+    }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         if section == 3 { return participantsData.count }
@@ -65,10 +86,8 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         case 1:
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummaryCardCell", for: indexPath) as! SummaryCardCell
-            
-            // Only loading Title
+            // Load Title
             cell.titleTextField.text = conversationTitle
-            
             cell.delegate = self
             return cell
             
@@ -78,7 +97,8 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "ParticipantsCardCell", for: indexPath) as! ParticipantCardCell
-            cell.configure(with: participantsData[indexPath.row])
+            let data = participantsData[indexPath.row]
+            cell.configure(with: data)
             return cell
             
         case 4:
@@ -92,11 +112,14 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             cell.delegate = self
             return cell
             
-        default: return UITableViewCell()
+        default:
+            return UITableViewCell()
         }
     }
     
     // MARK: - Delegates
+    
+    // Notes Auto-Resize
     func didUpdateText(in cell: NotesCardCell) {
         tableView.performBatchUpdates(nil, completion: nil)
         if let indexPath = tableView.indexPath(for: cell) {
@@ -104,6 +127,7 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         }
     }
     
+    // Title Change
     func didChangeTitle(text: String) {
         conversationTitle = text
     }
