@@ -16,7 +16,7 @@
 					<key>UISceneDelegateClassName</key>
 					<string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
 					<key>UISceneStoryboardFile</key>
-					<string>Quick Captions</string>
+					<string>Group-New.</string>
 				</dict>
 			</array>
 		</dict>

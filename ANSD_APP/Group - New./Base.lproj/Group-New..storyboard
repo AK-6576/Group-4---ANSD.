@@ -19,10 +19,10 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="RhI-WY-B1H">
-                                <rect key="frame" x="119" y="409" width="155" height="35"/>
+                                <rect key="frame" x="115" y="409" width="163" height="35"/>
                                 <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                                 <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="filled" title="Quick Captioning"/>
+                                <buttonConfiguration key="configuration" style="filled" title="New Conversation"/>
                                 <connections>
                                     <segue destination="BYZ-38-t0r" kind="show" identifier="quickCaptions" id="kMn-tD-nye"/>
                                 </connections>
@@ -37,7 +37,7 @@
             </objects>
             <point key="canvasLocation" x="257.25190839694653" y="112.67605633802818"/>
         </scene>
-        <!--Quick Captioning-->
+        <!--New Conversation-->
         <scene sceneID="tne-QT-ifu">
             <objects>
                 <viewController keyboardType="off" id="BYZ-38-t0r" customClass="QuickCaptioningViewController" customModule="ANSD_APP" customModuleProvider="target" sceneMemberID="viewController">
@@ -257,7 +257,7 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="PIP-LZ-TBZ" secondAttribute="trailing" constant="16" id="mCQ-xC-2Lf"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Quick Captioning" id="BLF-mM-Ziw"/>
+                    <navigationItem key="navigationItem" title="New Conversation" id="BLF-mM-Ziw"/>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="lj2-nh-zb8" id="zTe-cx-4Sx"/>
