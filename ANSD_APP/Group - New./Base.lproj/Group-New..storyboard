@@ -10,10 +10,10 @@
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--New Button View Controller-->
         <scene sceneID="uo8-Ek-elU">
             <objects>
-                <viewController id="Hhq-cU-zQj" sceneMemberID="viewController">
+                <viewController id="Hhq-cU-zQj" customClass="NewButtonViewController" customModule="ANSD_APP" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="Ap6-bB-Kt7">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
@@ -24,7 +24,7 @@
                                 <state key="normal" title="Button"/>
                                 <buttonConfiguration key="configuration" style="filled" title="New Conversation"/>
                                 <connections>
-                                    <segue destination="BYZ-38-t0r" kind="show" identifier="quickCaptions" id="kMn-tD-nye"/>
+                                    <action selector="newConversationTapped:" destination="Hhq-cU-zQj" eventType="touchUpInside" id="3oK-RP-s1G"/>
                                 </connections>
                             </button>
                         </subviews>
@@ -37,19 +37,60 @@
             </objects>
             <point key="canvasLocation" x="257.25190839694653" y="112.67605633802818"/>
         </scene>
-        <!--Quick Captioning-->
+        <!--Code View Controller-->
+        <scene sceneID="wsB-Ix-4L1">
+            <objects>
+                <viewController storyboardIdentifier="QRCodeViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" id="0LR-WU-6SB" customClass="QRCodeViewController" customModule="ANSD_APP" customModuleProvider="target" sceneMemberID="viewController">
+                    <view key="view" contentMode="scaleToFill" id="Hpv-oT-esY">
+                        <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <subviews>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="4XI-b9-mkY">
+                                <rect key="frame" x="76" y="362" width="240" height="128"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                            </imageView>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Scan To Join" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eHA-1H-cq1">
+                                <rect key="frame" x="148" y="498" width="97" height="21"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <fontDescription key="fontDescription" type="system" pointSize="17"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
+                            <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="u51-MA-wkS">
+                                <rect key="frame" x="145" y="635" width="104" height="35"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                <state key="normal" title="Button"/>
+                                <buttonConfiguration key="configuration" style="gray" title="Share Link"/>
+                                <connections>
+                                    <action selector="shareLinkTapped:" destination="0LR-WU-6SB" eventType="touchUpInside" id="4Nd-86-qg8"/>
+                                </connections>
+                            </button>
+                        </subviews>
+                        <viewLayoutGuide key="safeArea" id="8fA-XZ-nlF"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                    </view>
+                    <connections>
+                        <outlet property="qrImageView" destination="4XI-b9-mkY" id="jod-rs-10X"/>
+                        <outlet property="shareLinkButton" destination="u51-MA-wkS" id="l9r-Tr-1jd"/>
+                    </connections>
+                </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="2Wk-bh-PbG" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
+            </objects>
+            <point key="canvasLocation" x="257" y="796"/>
+        </scene>
+        <!--New Conversation-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController keyboardType="off" id="BYZ-38-t0r" customClass="QuickCaptioningViewController" customModule="ANSD_APP" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="GroupNewViewController" useStoryboardIdentifierAsRestorationIdentifier="YES" keyboardType="off" id="BYZ-38-t0r" customClass="GroupNewViewController" customModule="ANSD_APP" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
                         <rect key="frame" x="0.0" y="0.0" width="393" height="852"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="PIP-LZ-TBZ" userLabel="Card View">
-                                <rect key="frame" x="16" y="192" width="361" height="462"/>
+                                <rect key="frame" x="16" y="138" width="361" height="516"/>
                                 <subviews>
                                     <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="lj2-nh-zb8">
-                                        <rect key="frame" x="0.0" y="10" width="361" height="452"/>
+                                        <rect key="frame" x="0.0" y="10" width="361" height="506"/>
                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                         <collectionViewFlowLayout key="collectionViewLayout" automaticEstimatedItemSize="YES" minimumLineSpacing="10" minimumInteritemSpacing="10" id="5Le-fW-hzg">
                                             <size key="itemSize" width="128" height="128"/>
@@ -257,7 +298,9 @@
                             <constraint firstItem="6Tk-OE-BBY" firstAttribute="trailing" secondItem="PIP-LZ-TBZ" secondAttribute="trailing" constant="16" id="mCQ-xC-2Lf"/>
                         </constraints>
                     </view>
-                    <navigationItem key="navigationItem" title="Quick Captioning" id="BLF-mM-Ziw"/>
+                    <navigationItem key="navigationItem" title="New Conversation" id="BLF-mM-Ziw">
+                        <barButtonItem key="rightBarButtonItem" image="person.2.badge.plus.fill" catalog="system" id="jQs-G2-zTs"/>
+                    </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
                         <outlet property="collectionView" destination="lj2-nh-zb8" id="zTe-cx-4Sx"/>
@@ -708,6 +751,7 @@
         <image name="location" catalog="system" width="128" height="119"/>
         <image name="microphone.fill" catalog="system" width="110" height="128"/>
         <image name="pause.fill" catalog="system" width="114" height="128"/>
+        <image name="person.2.badge.plus.fill" catalog="system" width="128" height="90"/>
         <image name="person.2.fill" catalog="system" width="128" height="86"/>
         <image name="person.circle.fill" catalog="system" width="128" height="123"/>
         <image name="person.fill" catalog="system" width="128" height="120"/>
