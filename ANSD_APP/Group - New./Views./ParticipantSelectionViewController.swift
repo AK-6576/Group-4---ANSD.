@@ -1,39 +1,64 @@
-//
-//  ParticipantSelectionViewController.swift
-//  ANSD_APP
-//
-//  Created by Anshul Kumaria on 02/12/25.
-//
-
 import UIKit
 
 class ParticipantSelectionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
 
     @IBOutlet weak var tableView: UITableView!
     
+    // MARK: - Data
     let contacts = [
         "Steve Rogers", "Bucky Barnes", "Tony Stark",
         "Natasha Romanoff", "Bruce Banner", "Peter Parker",
         "Wanda Maximoff", "Vision"
     ]
-    var selectedIndices: Set<Int> = []
     
+    var unavailableContacts: Set<String> = []
+    var selectedIndices: Set<Int> = []
+    var onPeopleAdded: (([String]) -> Void)?
+    
+    // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
         
         tableView.delegate = self
         tableView.dataSource = self
         tableView.tableFooterView = UIView()
-        self.title = "Select Participants"
         
-        // --- THIS LISTENS FOR THE SIGNAL FROM SUMMARY SCREEN ---
-        NotificationCenter.default.addObserver(self, selector: #selector(goHome), name: NSNotification.Name("ReturnToHome"), object: nil)
+        setupNavigationBar()
     }
     
-    // --- THIS EXECUTES WHEN SUMMARY SAYS "END SESSION" ---
-    @objc func goHome() {
-        // Pop this screen off the stack, returning you to the NewButtonViewController
-        self.navigationController?.popToRootViewController(animated: true)
+    func setupNavigationBar() {
+        // SCENARIO 1: MODAL (Add People Mode)
+        // We need a manual "Cancel" button because there is no Back button.
+        if onPeopleAdded != nil {
+            self.title = "Add Participants"
+            navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .cancel, target: self, action: #selector(closeTapped))
+        }
+        
+        // SCENARIO 2: PUSH (New Conversation Mode)
+        // The system provides the "< Back" button automatically. We just need the "Start" button.
+        else {
+            self.title = "Connect"
+            // No Left Button needed (Back is automatic)
+        }
+    }
+    
+    // MARK: - Actions
+    @IBAction func doneTapped(_ sender: Any) {
+        // SCENARIO A: We are in "Add Mode" (Modal inside existing chat)
+        if onPeopleAdded != nil {
+            // Just pass data and close.
+            // DO NOT SEGUE (or you get the double chat bug).
+            let selectedNames = selectedIndices.map { contacts[$0] }
+            onPeopleAdded?(selectedNames)
+            self.dismiss(animated: true, completion: nil)
+        }
+        
+        // SCENARIO B: We are in "Start Mode" (Push from Home Screen)
+        else {
+            // Trigger the Manual Wire we just created.
+            // This takes you to the chat screen.
+            performSegue(withIdentifier: "goToChat", sender: self)
+        }
     }
 
     // MARK: - Navigation
@@ -46,27 +71,42 @@ class ParticipantSelectionViewController: UIViewController, UITableViewDelegate,
     }
 
     // MARK: - TableView Methods
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int { return contacts.count }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return contacts.count
+    }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "ContactCell", for: indexPath)
-        cell.textLabel?.text = contacts[indexPath.row]
+        let name = contacts[indexPath.row]
+        
+        cell.textLabel?.text = name
         cell.textLabel?.font = UIFont.systemFont(ofSize: 17, weight: .medium)
         
-        if selectedIndices.contains(indexPath.row) {
-            cell.accessoryType = .checkmark
-            cell.textLabel?.textColor = .systemBlue
-        } else {
+        if unavailableContacts.contains(name) {
+            cell.textLabel?.textColor = .systemGray3
+            cell.isUserInteractionEnabled = false
             cell.accessoryType = .none
-            cell.textLabel?.textColor = .label
+            cell.textLabel?.text = "\(name) (Unavailable)"
+        } else {
+            cell.isUserInteractionEnabled = true
+            if selectedIndices.contains(indexPath.row) {
+                cell.textLabel?.textColor = .systemBlue
+                cell.accessoryType = .checkmark
+            } else {
+                cell.textLabel?.textColor = .label
+                cell.accessoryType = .none
+            }
         }
         cell.selectionStyle = .none
         return cell
     }
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if selectedIndices.contains(indexPath.row) { selectedIndices.remove(indexPath.row) }
-        else { selectedIndices.insert(indexPath.row) }
+        if selectedIndices.contains(indexPath.row) {
+            selectedIndices.remove(indexPath.row)
+        } else {
+            selectedIndices.insert(indexPath.row)
+        }
         tableView.reloadRows(at: [indexPath], with: .automatic)
     }
 }

@@ -112,7 +112,7 @@ class GroupNewViewController: UIViewController, UICollectionViewDelegate, UIColl
         alert.addAction(UIAlertAction(title: "Cancel", style: .cancel))
         self.present(alert, animated: true)
     }
-
+    
     // MARK: - Button Actions
     @IBAction func didTapPauseButton(_ sender: UIButton) {
         togglePauseState()
@@ -149,7 +149,7 @@ class GroupNewViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         self.present(actionSheet, animated: true)
     }
-
+    
     // MARK: - Layout Helpers
     func scrollToBottom() {
         guard messages.count > 0 else { return }
@@ -159,5 +159,33 @@ class GroupNewViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.bounds.width - 32, height: 100)
+    }
+    
+    @IBAction func addPersonTapped(_ sender: Any) {
+        
+        let storyboard = UIStoryboard(name: "Group-New.", bundle: nil)
+        
+        if let selectionVC = storyboard.instantiateViewController(withIdentifier: "ParticipantSelectionViewController") as? ParticipantSelectionViewController {
+            
+            // 1. TELL IT WHO IS ALREADY HERE
+            // (In a real app, you'd scan your 'messages' array to find names)
+            // For now, let's say "Peter Parker" and "Bruce Banner" are already here
+            selectionVC.unavailableContacts = ["Peter Parker", "Bruce Banner"]
+            
+            // 2. DEFINE WHAT HAPPENS WHEN THEY CLICK DONE
+            selectionVC.onPeopleAdded = { [weak self] newNames in
+                print("User added: \(newNames)")
+                // Here you can insert a system message: "\(newNames) joined the chat."
+            }
+            
+            // 3. PRESENT WITH NAV BAR (So we get the Title and Buttons)
+            let navWrapper = UINavigationController(rootViewController: selectionVC)
+            navWrapper.modalPresentationStyle = .pageSheet
+            if let sheet = navWrapper.sheetPresentationController {
+                sheet.detents = [.medium(), .large()]
+            }
+            
+            self.present(navWrapper, animated: true)
+        }
     }
 }

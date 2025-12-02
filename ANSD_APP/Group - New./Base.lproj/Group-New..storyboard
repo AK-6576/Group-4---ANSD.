@@ -79,14 +79,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="Connect" id="gg0-zO-wa0">
-                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="dVB-WQ-5CE">
-                            <connections>
-                                <segue destination="BYZ-38-t0r" kind="show" identifier="goToChat" id="0sQ-MY-Csl"/>
-                            </connections>
-                        </barButtonItem>
+                        <barButtonItem key="rightBarButtonItem" systemItem="done" id="dVB-WQ-5CE"/>
                     </navigationItem>
                     <connections>
                         <outlet property="tableView" destination="FoG-g9-Kf3" id="fUT-PF-jfk"/>
+                        <segue destination="BYZ-38-t0r" kind="show" identifier="goToChat" id="26M-BR-Ks3"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="mhF-zT-1D2" userLabel="First Responder" customClass="UIResponder" sceneMemberID="firstResponder"/>
@@ -314,7 +311,11 @@
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" title="New Conversation" id="BLF-mM-Ziw">
-                        <barButtonItem key="rightBarButtonItem" image="person.2.badge.plus.fill" catalog="system" id="jQs-G2-zTs"/>
+                        <barButtonItem key="rightBarButtonItem" image="person.2.badge.plus.fill" catalog="system" id="jQs-G2-zTs">
+                            <connections>
+                                <action selector="addPersonTapped:" destination="BYZ-38-t0r" id="2Dy-EF-utp"/>
+                            </connections>
+                        </barButtonItem>
                     </navigationItem>
                     <nil key="simulatedBottomBarMetrics"/>
                     <connections>
