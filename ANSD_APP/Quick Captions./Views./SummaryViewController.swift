@@ -77,10 +77,27 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         
         // Action 2: End Session (Red/Destructive)
         let endAction = UIAction(title: "End Session", image: UIImage(systemName: "xmark.circle"), attributes: .destructive) { [weak self] _ in
-            // Go Home (Dismiss everything)
-            self?.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+            guard let self = self else { return }
+            
+            // STRATEGY: "The Sneaky Pop"
+            // We need to dismiss the modals (Summary & Chat) AND pop the Selection screen
+            // so that we land back on the Home button screen.
+            
+            // 1. Access the Root Navigation Controller (This holds the Selection Screen)
+            if let navController = self.view.window?.rootViewController as? UINavigationController {
+                
+                // 2. Silently pop the navigation stack to the root (Home Screen)
+                // animated: false ensures the user doesn't see the Selection screen zip by.
+                navController.popToRootViewController(animated: false)
+                
+                // 3. Dismiss the entire Modal stack (Chat + Summary)
+                // This reveals the screen 'underneath', which is now the Home Screen.
+                navController.dismiss(animated: true, completion: nil)
+            } else {
+                // Fallback (Safe default)
+                self.view.window?.rootViewController?.dismiss(animated: true, completion: nil)
+            }
         }
-        
         // Create the Menu
         let menu = UIMenu(title: "", children: [shareAction, endAction])
         
