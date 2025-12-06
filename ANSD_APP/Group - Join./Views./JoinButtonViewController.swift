@@ -7,7 +7,7 @@
 
 import UIKit
 
-class NewButtonViewController: UIViewController {
+class JoinButtonViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -15,9 +15,9 @@ class NewButtonViewController: UIViewController {
     
     @IBAction func newConversationTapped(_ sender: UIButton) {
         
-        let storyboard = UIStoryboard(name: "Group-New.", bundle: nil)
+        let storyboard = UIStoryboard(name: "Group-Join.", bundle: nil)
         
-        if let selectionVC = storyboard.instantiateViewController(withIdentifier: "ParticipantSelectionViewController") as? ParticipantSelectionViewController {
+        if let selectionVC = storyboard.instantiateViewController(withIdentifier: "ParticipantSelectionViewController") as? SessionSelectionViewController {
             
             // USE PUSH (Native iOS Navigation)
             // This automatically gives you the "< Back" button in the top left.

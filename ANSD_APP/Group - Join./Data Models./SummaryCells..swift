@@ -12,15 +12,14 @@ protocol NotesCardCellDelegate: AnyObject {
     func didUpdateText(in cell: NotesCardCell)
 }
 
-protocol SummaryCardDelegate: AnyObject {
-    func didChangeTitle(text: String)
-}
+// (SummaryCardDelegate removed as title is now read-only)
 
 // MARK: - Styling Helper
 private func styleCard(view: UIView?) {
     guard let card = view else { return }
     card.layer.cornerRadius = 12
     card.backgroundColor = .white
+    // Subtle shadow for depth
     card.layer.shadowColor = UIColor.black.cgColor
     card.layer.shadowOpacity = 0.05
     card.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -31,34 +30,39 @@ private func styleCard(view: UIView?) {
 class SummarySectionHeaderCell: UITableViewCell {
     @IBOutlet weak var headerIcon: UIImageView!
     @IBOutlet weak var headerLabel: UILabel!
-    override func awakeFromNib() { super.awakeFromNib(); backgroundColor = .clear; contentView.backgroundColor = .clear }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
+    }
 }
 
 class ParticipantsSummaryHeaderCell: UITableViewCell {
     @IBOutlet weak var participantIcon: UIImageView!
     @IBOutlet weak var participantLabel: UILabel!
-    override func awakeFromNib() { super.awakeFromNib(); backgroundColor = .clear; contentView.backgroundColor = .clear }
+    
+    override func awakeFromNib() {
+        super.awakeFromNib()
+        backgroundColor = .clear
+        contentView.backgroundColor = .clear
+    }
 }
 
-// MARK: - 1. Conversation Card (Title Only)
+// MARK: - 1. Conversation Card (Read-Only Title)
 class SummaryCardCell: UITableViewCell {
     
     @IBOutlet weak var mainCardView: UIView!
     
-    @IBOutlet weak var titleTextField: UITextField!   // Only Title is editable
+    @IBOutlet weak var titleLabel: UILabel!
+    
     @IBOutlet weak var dateLabel: UILabel!
     @IBOutlet weak var locationLabel: UILabel!
-    
-    weak var delegate: SummaryCardDelegate?
     
     override func awakeFromNib() {
         super.awakeFromNib()
         backgroundColor = .clear
         styleCard(view: mainCardView)
-    }
-    
-    @IBAction func titleChanged(_ sender: UITextField) {
-        delegate?.didChangeTitle(text: sender.text ?? "")
     }
 }
 
@@ -67,18 +71,22 @@ class ParticipantCardCell: UITableViewCell {
     
     @IBOutlet weak var mainCardView: UIView!
     @IBOutlet weak var avatarImageView: UIImageView!
-    @IBOutlet weak var detailsLabel: UILabel! // Uses a Label to show summary
+    @IBOutlet weak var detailsLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         backgroundColor = .clear
         styleCard(view: mainCardView)
+        
+        // Circular Avatar Style
         avatarImageView.layer.cornerRadius = 4
         avatarImageView.clipsToBounds = true
         avatarImageView.tintColor = .systemGray
     }
     
     func configure(with data: ParticipantData) {
+        // Here we just set the summary text.
+        // You could also set avatarImageView.image based on data.name if needed.
         detailsLabel.text = data.summary
     }
 }
@@ -95,22 +103,33 @@ class NotesCardCell: UITableViewCell, UITextViewDelegate {
         super.awakeFromNib()
         backgroundColor = .clear
         styleCard(view: mainCardView)
+        
         notesTextView.delegate = self
         notesTextView.text = placeholderText
         notesTextView.textColor = .lightGray
         notesTextView.font = UIFont.systemFont(ofSize: 15)
-        notesTextView.isScrollEnabled = false
+        notesTextView.isScrollEnabled = false // Auto-expand height
+        
+        // Remove padding to align with card
         notesTextView.textContainerInset = .zero
         notesTextView.textContainer.lineFragmentPadding = 0
     }
     
     func textViewDidBeginEditing(_ textView: UITextView) {
-        if textView.text == placeholderText { textView.text = nil; textView.textColor = UIColor.label }
+        if textView.text == placeholderText {
+            textView.text = nil
+            textView.textColor = UIColor.label
+        }
     }
     
     func textViewDidEndEditing(_ textView: UITextView) {
-        if textView.text.isEmpty { textView.text = placeholderText; textView.textColor = .lightGray }
+        if textView.text.isEmpty {
+            textView.text = placeholderText
+            textView.textColor = .lightGray
+        }
     }
     
-    func textViewDidChange(_ textView: UITextView) { delegate?.didUpdateText(in: self) }
+    func textViewDidChange(_ textView: UITextView) {
+        delegate?.didUpdateText(in: self)
+    }
 }

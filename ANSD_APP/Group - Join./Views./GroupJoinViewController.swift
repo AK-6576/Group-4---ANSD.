@@ -1,5 +1,5 @@
 //
-//  GroupNewViewController.swift
+//  GroupJoinViewController.swift
 //  Quick Captioning
 //
 //  Created by Anshul Kumaria on 25/11/25.
@@ -7,7 +7,7 @@
 
 import UIKit
 
-class GroupNewViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
+class GroupJoinViewController: UIViewController, UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
     
     // MARK: - Outlets
     @IBOutlet weak var collectionView: UICollectionView!
@@ -16,8 +16,12 @@ class GroupNewViewController: UIViewController, UICollectionViewDelegate, UIColl
     @IBOutlet weak var endButton: UIButton!
     
     // MARK: - Variables
+    
+    // 1. VARIABLE TO HOLD THE SESSION NAME
+    var sessionTitle: String = "Home Conversation"
+    
     var messages: [ChatMessage] = []
-    let fullConversation = ChatData.fullConversation // Ensure ChatData.swift exists
+    let fullConversation = ChatData.fullConversation // Uses the Spider-Man data
     
     var currentMessageIndex = 0
     var isPaused = false
@@ -26,6 +30,9 @@ class GroupNewViewController: UIViewController, UICollectionViewDelegate, UIColl
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        // Optional: Set the nav bar title to the session name
+        self.title = sessionTitle
         
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -134,9 +141,14 @@ class GroupNewViewController: UIViewController, UICollectionViewDelegate, UIColl
         
         let endAction = UIAlertAction(title: "End Session", style: .destructive) { _ in
             
-            let storyboard = UIStoryboard(name: "Group-New.", bundle: nil)
+            let storyboard = UIStoryboard(name: "Group-Join.", bundle: nil)
             
             if let summaryNav = storyboard.instantiateViewController(withIdentifier: "SummaryNavController") as? UINavigationController {
+                
+                // 2. PASS THE TITLE TO SUMMARY SCREEN
+                if let summaryVC = summaryNav.topViewController as? SummaryViewController {
+                    summaryVC.conversationTitle = self.sessionTitle
+                }
                 
                 summaryNav.modalPresentationStyle = .fullScreen
                 summaryNav.modalTransitionStyle = .crossDissolve
@@ -159,33 +171,5 @@ class GroupNewViewController: UIViewController, UICollectionViewDelegate, UIColl
     
     func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, sizeForItemAt indexPath: IndexPath) -> CGSize {
         return CGSize(width: collectionView.bounds.width - 32, height: 100)
-    }
-    
-    @IBAction func addPersonTapped(_ sender: Any) {
-        
-        let storyboard = UIStoryboard(name: "Group-New.", bundle: nil)
-        
-        if let selectionVC = storyboard.instantiateViewController(withIdentifier: "ParticipantSelectionViewController") as? ParticipantSelectionViewController {
-            
-            // 1. TELL IT WHO IS ALREADY HERE
-            // (In a real app, you'd scan your 'messages' array to find names)
-            // For now, let's say "Peter Parker" and "Bruce Banner" are already here
-            selectionVC.unavailableContacts = ["Peter Parker", "Bruce Banner"]
-            
-            // 2. DEFINE WHAT HAPPENS WHEN THEY CLICK DONE
-            selectionVC.onPeopleAdded = { [weak self] newNames in
-                print("User added: \(newNames)")
-                // Here you can insert a system message: "\(newNames) joined the chat."
-            }
-            
-            // 3. PRESENT WITH NAV BAR (So we get the Title and Buttons)
-            let navWrapper = UINavigationController(rootViewController: selectionVC)
-            navWrapper.modalPresentationStyle = .pageSheet
-            if let sheet = navWrapper.sheetPresentationController {
-                sheet.detents = [.medium(), .large()]
-            }
-            
-            self.present(navWrapper, animated: true)
-        }
     }
 }
