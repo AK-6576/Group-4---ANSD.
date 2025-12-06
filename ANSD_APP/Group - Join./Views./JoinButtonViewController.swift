@@ -1,5 +1,5 @@
 //
-//  NewButtonViewController.swift
+//  JoinButtonViewController.swift
 //  ANSD_APP
 //
 //  Created by Anshul Kumaria on 01/12/25.
@@ -13,14 +13,11 @@ class JoinButtonViewController: UIViewController {
         super.viewDidLoad()
     }
     
-    @IBAction func newConversationTapped(_ sender: UIButton) {
+    @IBAction func joinConversationTapped(_ sender: UIButton) {
         
         let storyboard = UIStoryboard(name: "Group-Join.", bundle: nil)
         
         if let selectionVC = storyboard.instantiateViewController(withIdentifier: "ParticipantSelectionViewController") as? SessionSelectionViewController {
-            
-            // USE PUSH (Native iOS Navigation)
-            // This automatically gives you the "< Back" button in the top left.
             self.navigationController?.pushViewController(selectionVC, animated: true)
         }
     }

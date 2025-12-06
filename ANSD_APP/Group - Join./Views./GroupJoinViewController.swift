@@ -1,6 +1,6 @@
 //
 //  GroupJoinViewController.swift
-//  Quick Captioning
+//  ANSD_APP
 //
 //  Created by Anshul Kumaria on 25/11/25.
 //
@@ -17,11 +17,10 @@ class GroupJoinViewController: UIViewController, UICollectionViewDelegate, UICol
     
     // MARK: - Variables
     
-    // 1. VARIABLE TO HOLD THE SESSION NAME
     var sessionTitle: String = "Home Conversation"
     
     var messages: [ChatMessage] = []
-    let fullConversation = ChatData.fullConversation // Uses the Spider-Man data
+    let fullConversation = ChatData.fullConversation
     
     var currentMessageIndex = 0
     var isPaused = false
@@ -30,8 +29,7 @@ class GroupJoinViewController: UIViewController, UICollectionViewDelegate, UICol
     // MARK: - Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-        // Optional: Set the nav bar title to the session name
+
         self.title = sessionTitle
         
         collectionView.dataSource = self
@@ -145,7 +143,6 @@ class GroupJoinViewController: UIViewController, UICollectionViewDelegate, UICol
             
             if let summaryNav = storyboard.instantiateViewController(withIdentifier: "SummaryNavController") as? UINavigationController {
                 
-                // 2. PASS THE TITLE TO SUMMARY SCREEN
                 if let summaryVC = summaryNav.topViewController as? SummaryViewController {
                     summaryVC.conversationTitle = self.sessionTitle
                 }

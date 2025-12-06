@@ -1,6 +1,6 @@
 //
 //  SummaryViewController.swift
-//  Quick Captioning
+//  ANSD_APP
 //
 //  Created by Anshul Kumaria on 25/11/25.
 //
@@ -13,10 +13,8 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var optionsButton: UIBarButtonItem!
     
-    // 1. VARIABLE TO RECEIVE TITLE
-    var conversationTitle = "Unknown Session"
+    var conversationTitle = "Session"
     
-    // 2. DATA SOURCE (Updated for Spider-Man Leaks / Group-Join Context)
     var participantsData: [ParticipantData] = [
         ParticipantData(
             name: "Peter Parker",
@@ -26,12 +24,12 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         ParticipantData(
             name: "Bruce Banner",
             initials: "BB",
-            summary: "Bruce is having fun at Peter’s misfortune and he hasn’t started doing it as well. He is very relaxed about the whole thing."
+            summary: "Bruce isn’t having fun for he hasn’t started doing it as well. He is panicking about the whole thing."
         ),
         ParticipantData(
             name: "Me",
             initials: "ME",
-            summary: "Steve is being smug about the whole thing and is scolding his friends for not having done the assignment in the past 3 weeks.."
+            summary: "Steve is being smug about the whole thing and is scolding his friends for not having done the assignment in the past 3 weeks."
         )
     ]
     
@@ -75,7 +73,6 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         let endAction = UIAction(title: "End Session", image: UIImage(systemName: "xmark.circle"), attributes: .destructive) { [weak self] _ in
             guard let self = self else { return }
             
-            // THE "SNEAKY POP" STRATEGY (Return to Home)
             if let navController = self.view.window?.rootViewController as? UINavigationController {
                 navController.popToRootViewController(animated: false)
                 navController.dismiss(animated: true, completion: nil)
@@ -85,7 +82,7 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
         let menu = UIMenu(title: "", children: [shareAction, endAction])
         optionsButton.menu = menu
     }
-
+    
     // MARK: - Export Logic
     func showExportPopup() {
         let alert = UIAlertController(title: "Export Summary", message: "Choose a format to share", preferredStyle: .alert)
@@ -156,11 +153,9 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             return cell
             
         case 1:
-            // --- UPDATED CELL LOGIC ---
-            // Must match "SummaryCardCell" in storyboard
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "SummaryCardCell", for: indexPath) as! SummaryCardCell
             
-            // Set the read-only Label
             cell.titleLabel.text = conversationTitle
             
             return cell
@@ -195,6 +190,4 @@ class SummaryViewController: UIViewController, UITableViewDelegate, UITableViewD
             tableView.scrollToRow(at: indexPath, at: .bottom, animated: false)
         }
     }
-    
-    // Removed didChangeTitle because we are not editing the title here anymore
 }

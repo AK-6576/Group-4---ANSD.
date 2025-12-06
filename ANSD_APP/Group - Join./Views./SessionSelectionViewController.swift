@@ -1,3 +1,10 @@
+//
+//  SessionSelectionViewController.swift
+//  ANSD_APP
+//
+//  Created by Anshul Kumaria on 01/12/25.
+//
+
 import UIKit
 
 class SessionSelectionViewController: UIViewController, UITableViewDelegate, UITableViewDataSource {
@@ -6,7 +13,7 @@ class SessionSelectionViewController: UIViewController, UITableViewDelegate, UIT
     
     // MARK: - Data
     let sessions: [SessionModel] = [
-        SessionModel(title: "UI/UX Design Session", subtitle: "Dr. Doom"),
+        SessionModel(title: "UI/UX Design Session", subtitle: "Reed Richards"),
         SessionModel(title: "Project Alpha X7", subtitle: "Bruce Wayne"),
         SessionModel(title: "Starbucks Meetup", subtitle: "Andrew Garfield"),
         SessionModel(title: "Assignment Completion", subtitle: "Peter Parker")
@@ -16,7 +23,6 @@ class SessionSelectionViewController: UIViewController, UITableViewDelegate, UIT
     override func viewDidLoad() {
         super.viewDidLoad()
         setupTableView()
-        self.title = "Join Session"
     }
     
     func setupTableView() {
@@ -32,10 +38,8 @@ class SessionSelectionViewController: UIViewController, UITableViewDelegate, UIT
             if let chatVC = segue.destination as? GroupJoinViewController {
                 chatVC.modalPresentationStyle = .fullScreen
                 
-                // FIX: Check if the 'sender' is actually a SessionModel
                 if let sessionData = sender as? SessionModel {
                     chatVC.sessionTitle = sessionData.title
-                    print("✅ SUCCESS! Passing title: \(sessionData.title)")
                 }
             }
         }
@@ -83,13 +87,10 @@ class SessionSelectionViewController: UIViewController, UITableViewDelegate, UIT
     // MARK: - Selection Logic (THE FIX)
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         
-        // 1. Get the data for the row you clicked
         let selectedSession = sessions[indexPath.row]
         
-        // 2. Send THIS DATA explicitly as the 'sender'
         performSegue(withIdentifier: "goToChat", sender: selectedSession)
         
-        // 3. Deselect animation happens after we start the segue
         tableView.deselectRow(at: indexPath, animated: true)
     }
 }

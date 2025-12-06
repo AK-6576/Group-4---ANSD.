@@ -1,6 +1,6 @@
 //
 //  SummaryCells.swift
-//  Quick Captioning
+//  ANSD_APP
 //
 //  Created by Anshul Kumaria on 25/11/25.
 //
@@ -12,14 +12,12 @@ protocol NotesCardCellDelegate: AnyObject {
     func didUpdateText(in cell: NotesCardCell)
 }
 
-// (SummaryCardDelegate removed as title is now read-only)
-
 // MARK: - Styling Helper
 private func styleCard(view: UIView?) {
     guard let card = view else { return }
     card.layer.cornerRadius = 12
     card.backgroundColor = .white
-    // Subtle shadow for depth
+
     card.layer.shadowColor = UIColor.black.cgColor
     card.layer.shadowOpacity = 0.05
     card.layer.shadowOffset = CGSize(width: 0, height: 2)
@@ -78,15 +76,12 @@ class ParticipantCardCell: UITableViewCell {
         backgroundColor = .clear
         styleCard(view: mainCardView)
         
-        // Circular Avatar Style
         avatarImageView.layer.cornerRadius = 4
         avatarImageView.clipsToBounds = true
         avatarImageView.tintColor = .systemGray
     }
     
     func configure(with data: ParticipantData) {
-        // Here we just set the summary text.
-        // You could also set avatarImageView.image based on data.name if needed.
         detailsLabel.text = data.summary
     }
 }
@@ -108,9 +103,8 @@ class NotesCardCell: UITableViewCell, UITextViewDelegate {
         notesTextView.text = placeholderText
         notesTextView.textColor = .lightGray
         notesTextView.font = UIFont.systemFont(ofSize: 15)
-        notesTextView.isScrollEnabled = false // Auto-expand height
+        notesTextView.isScrollEnabled = false
         
-        // Remove padding to align with card
         notesTextView.textContainerInset = .zero
         notesTextView.textContainer.lineFragmentPadding = 0
     }
